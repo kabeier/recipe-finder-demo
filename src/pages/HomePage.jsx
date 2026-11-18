@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useOutletContext } from 'react-router'
 import axios from 'axios'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -9,7 +10,8 @@ function HomePage() {
   // What is typed in the search box.
   const [query, setQuery] = useState('')
   // The search results: an array of meal objects from the API.
-  const [meals, setMeals] = useState([])
+  // They come from App (through <Outlet context>), so they are still here after you press Back.
+  const { meals, setMeals } = useOutletContext()
 
   // async, because we wait for the API to answer.
   const handleSubmit = async (event) => {
