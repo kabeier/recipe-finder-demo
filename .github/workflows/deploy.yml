@@ -1,0 +1,49 @@
+# GitHub runs this file by itself: it lives in .github/workflows/ in the repo.
+# Its job: build the app and publish the dist/ folder to GitHub Pages.
+name: Deploy to GitHub Pages
+
+# When it runs: every push to main, or by hand (Actions tab -> Run workflow).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# What this run is allowed to do: read the code, publish to Pages,
+# and get the id-token that proves to Pages that the upload came from this repo.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time. A newer push waits for the one already running.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # A fresh Linux machine from GitHub, thrown away when the job ends.
+    runs-on: ubuntu-latest
+    # The Pages environment. Its url is the live site's link, shown on the run page.
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Copy the repo's code onto the machine.
+      - uses: actions/checkout@v7
+      # Install Node 24. cache: npm reuses downloaded packages, so later runs are faster.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      # npm ci: a clean install of exactly what package-lock.json lists.
+      - run: npm ci
+      # Builds the app into dist/ (mode is 'production', so base is /recipe-finder/).
+      - run: npm run build
+      # Packs dist/ up for Pages.
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+      # Publishes it. id: deployment lets the url line above read this step's page_url.
+      - id: deployment
+        uses: actions/deploy-pages@v5
