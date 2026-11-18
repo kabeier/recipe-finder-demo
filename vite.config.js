@@ -8,6 +8,6 @@ export default defineConfig(({ mode }) => ({
   // GitHub Pages serves the site from a folder named after the repo:
   // https://<user>.github.io/recipe-finder/ . base makes the built page load its files from there.
   // Use YOUR repo's name. In dev the app still lives at /.
-  base: mode === 'production' ? '/recipe-finder/' : '/',
+  base: mode === 'production' ? '/recipe-finder-demo/' : '/',
   plugins: [react()],
 }))
